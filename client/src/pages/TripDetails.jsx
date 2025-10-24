@@ -16,13 +16,15 @@ const TripDetails = ({data}) => {
         setPost({id: parseInt(result.id), title: result.title, description: result.description, img_url: result.img_url, num_days: parseInt(result.num_days), start_date: result.start_date.slice(0,10), end_date: result.end_date.slice(0,10), total_cost: result.total_cost});
 
         const fetchActivities = async () => {
-
-
-        }
+            const response = await fetch('/api/activities/' + id);
+            const data = await response.json();
+            setActivities(data);
+        };
 
         const fetchDestinations = async () => {
-
-            
+            const response = await fetch('/api/trips-destinations/destinations/' + id);
+            const data = await response.json();
+            setDestinations(data);
         }
 
 
@@ -52,7 +54,7 @@ const TripDetails = ({data}) => {
                 <div className="activities">
                 {
                 activities && activities.length > 0 ?
-                activities.map((activity,index) => 
+                activities.map((activity) => 
                     <ActivityBtn id={activity.id} activity={activity.activity} num_votes={activity.num_votes}/>
                 ) : ''
                 }
@@ -62,7 +64,7 @@ const TripDetails = ({data}) => {
                 <div className="destinations">
                 {
                 destinations && destinations.length > 0 ?
-                destinations.map((destination,index) => 
+                destinations.map((destination) => 
                     <DestinationBtn id={destination.id} destination={destination.destination} />
                 ) : ''
                 }
