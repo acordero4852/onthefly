@@ -1,12 +1,12 @@
-import { pool } from './database.js';
-import './dotenv.js';
-import { fileURLToPath } from 'url';
-import path, { dirname } from 'path';
-import fs from 'fs';
+import { pool } from './database.js'
+import './dotenv.js'
+import { fileURLToPath } from 'url'
+import path, { dirname } from 'path'
+import fs from 'fs'
 
-const currentPath = fileURLToPath(import.meta.url);
-const tripsFile = fs.readFileSync(path.join(dirname(currentPath), '../config/data/data.json'));
-const tripsData = JSON.parse(tripsFile);
+const currentPath = fileURLToPath(import.meta.url)
+const tripsFile = fs.readFileSync(path.join(dirname(currentPath), '../config/data/data.json'))
+const tripsData = JSON.parse(tripsFile)
 
 const createActivitiesTable = async () => {
     const createActivitiesTableQuery = `
@@ -17,15 +17,15 @@ const createActivitiesTable = async () => {
             num_votes integer DEFAULT 0,
             FOREIGN KEY(trip_id) REFERENCES trips(id)
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createActivitiesTableQuery);
-        console.log('🎉 activities table created successfully');
+        const res = await pool.query(createActivitiesTableQuery)
+        console.log('🎉 activities table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating activities table', err);
+        console.error('⚠️ error creating activities table', err)
     }
-};
+}
 
 const createDestinationsTable = async () => {
     const createDestinationsTableQuery = `
@@ -38,15 +38,15 @@ const createDestinationsTable = async () => {
             img_url text NOT NULL,
             flag_img_url text NOT NULL
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createDestinationsTableQuery);
-        console.log('🎉 destinations table created successfully');
+        const res = await pool.query(createDestinationsTableQuery)
+        console.log('🎉 destinations table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating destinations table', err);
+        console.error('⚠️ error creating destinations table', err)
     }
-};
+}
 
 const createTripsDestinationsTable = async () => {
     const createTripsDestinationsTableQuery = `
@@ -57,15 +57,15 @@ const createTripsDestinationsTable = async () => {
             FOREIGN KEY (trip_id) REFERENCES trips(id) ON UPDATE CASCADE,
             FOREIGN KEY (destination_id) REFERENCES destinations(id) ON UPDATE CASCADE
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createTripsDestinationsTableQuery);
-        console.log('🎉 trips-destinations table created successfully');
+        const res = await pool.query(createTripsDestinationsTableQuery)
+        console.log('🎉 trips-destinations table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating trips-destinations table', err);
+        console.error('⚠️ error creating trips-destinations table', err)
     }
-};
+}
 
 const createUsersTable = async () => {
     const createUsersTableQuery = `
@@ -76,15 +76,15 @@ const createUsersTable = async () => {
             avatarurl varchar(500) NOT NULL,
             accesstoken varchar(500) NOT NULL
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createUsersTableQuery);
-        console.log('🎉 users table created successfully');
+        const res = await pool.query(createUsersTableQuery)
+        console.log('🎉 users table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating users table', err);
+        console.error('⚠️ error creating users table', err)
     }
-};
+}
 
 const createTripsUsersTable = async () => {
     const createTripsUsersTableQuery = `
@@ -95,15 +95,15 @@ const createTripsUsersTable = async () => {
             FOREIGN KEY (trip_id) REFERENCES trips(id) ON UPDATE CASCADE,
             FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE CASCADE
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createTripsUsersTableQuery);
-        console.log('🎉 trips_users table created successfully');
+        const res = await pool.query(createTripsUsersTableQuery)
+        console.log('🎉 trips_users table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating trips_users table', err);
+        console.error('⚠️ error creating trips_users table', err)
     }
-};
+}
 
 const createTripsTable = async () => {
     const createTripsTableQuery = `
@@ -117,23 +117,23 @@ const createTripsTable = async () => {
             end_date date NOT NULL,
             total_cost money NOT NULL
         );
-    `;
+    `
 
     try {
-        const res = await pool.query(createTripsTableQuery);
-        console.log('🎉 trips table created successfully');
+        const res = await pool.query(createTripsTableQuery)
+        console.log('🎉 trips table created successfully')
     } catch (err) {
-        console.error('⚠️ error creating trips table', err);
+        console.error('⚠️ error creating trips table', err)
     }
-};
+}
 
 const seedTripsTable = async () => {
-    await createTripsTable();
+    await createTripsTable()
 
     tripsData.forEach((trip) => {
         const insertQuery = {
             text: 'INSERT INTO trips (title, description, img_url, num_days, start_date, end_date, total_cost) VALUES ($1, $2, $3, $4, $5, $6, $7)'
-        };
+        }
 
         const values = [
             trip.title,
@@ -143,22 +143,22 @@ const seedTripsTable = async () => {
             trip.start_date,
             trip.end_date,
             trip.total_cost
-        ];
+        ]
 
         pool.query(insertQuery, values, (err, res) => {
             if (err) {
-                console.error('⚠️ error inserting trip', err);
-                return;
+                console.error('⚠️ error inserting trip', err)
+                return
             }
 
-            console.log(`✅ ${trip.title} added successfully`);
-        });
-    });
-};
+            console.log(`✅ ${trip.title} added successfully`)
+        })
+    })
+}
 
-seedTripsTable();
-createActivitiesTable();
-createDestinationsTable();
-createTripsDestinationsTable();
-createUsersTable();
-createTripsUsersTable();
+seedTripsTable()
+createActivitiesTable()
+createDestinationsTable()
+createTripsDestinationsTable()
+createUsersTable()
+createTripsUsersTable()
