@@ -1,14 +1,14 @@
-import {useState, useEffect} from 'react'
-import { Link, useParams } from 'react-router-dom'
-import ActivityBtn from '../components/ActivityBtn'
-import DestinationBtn from '../components/DestinationBtn'
-import '../css/TripDetails.css'
+import { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
+import ActivityBtn from '../components/ActivityBtn';
+import DestinationBtn from '../components/DestinationBtn';
+import '../css/TripDetails.css';
 
-const TripDetails = ( { data } ) => {
+const TripDetails = ({ data, api_url, user }) => {
 
-    const { id } = useParams()
-    const [activities, setActivities] = useState([])
-    const [destinations, setDestinations] = useState([])
+    const { id } = useParams();
+    const [activities, setActivities] = useState([]);
+    const [destinations, setDestinations] = useState([]);
     const [trip, setTrip] = useState({
         id: 0,
         title: '',
@@ -17,11 +17,23 @@ const TripDetails = ( { data } ) => {
         num_days: 0,
         start_date: '',
         end_date: '',
-        total_cost: 0.0
+        total_cost: 0.0,
+        username: user.username
+    });
+    const [travelers, setTravelers] = useState([]);
+
+    useEffect(() => {
+        const fetchTravelers = async () => {
+            const response = await fetch(`${api_url}/api/users-trips/users/${id}`);
+            const travelersJson = await response.json();
+            setTravelers(travelersJson);
+        };
+
+        fetchTravelers();
     })
 
     useEffect(() => {
-        const result = data.filter(item => item.id === parseInt(id))[0]
+        const result = data.filter(item => item.id === parseInt(id))[0];
 
         if (result) {
             setTrip({
@@ -31,28 +43,28 @@ const TripDetails = ( { data } ) => {
                 img_url: result.img_url,
                 num_days: parseInt(result.num_days),
                 start_date: result.start_date.slice(0, 10),
-                end_date: result.end_date.slice(0,10),
+                end_date: result.end_date.slice(0, 10),
                 total_cost: result.total_cost
-            })
+            });
         }
-    }, [data, id])
+    }, [data, id]);
 
     useEffect(() => {
         const fetchActivities = async () => {
-            const response = await fetch('/api/activities/' + id)
-            const data = await response.json()
-            setActivities(data)
-        }
+            const response = await fetch(`${api_url}/api/activities/${id}`);
+            const data = await response.json();
+            setActivities(data);
+        };
 
         const fetchDestinations = async () => {
-            const response = await fetch('/api/trips-destinations/destinations/' + id)
-            const data = await response.json()
-            setDestinations(data)
-        }
+            const response = await fetch(`${api_url}/api/trips-destinations/destinations/${id}`);
+            const data = await response.json();
+            setDestinations(data);
+        };
 
-        fetchActivities()
-        fetchDestinations()
-    }, [data, id])
+        fetchActivities();
+        fetchDestinations();
+    }, [data, id]);
 
     return (
         <div className='out'>
@@ -66,48 +78,62 @@ const TripDetails = ( { data } ) => {
                     <p>{trip.description}</p>
                 </div>
 
-                <div className='right-side' style={{ backgroundImage:`url(${trip.img_url})`}}>
+                <div className='right-side' style={{ backgroundImage: `url(${trip.img_url})` }}>
                 </div>
+            </div>
+
+            <div className='travelers'>
+                {
+                    travelers && travelers.length > 0 ?
+                        travelers.map((traveler, index) =>
+                            <p key={index} style={{ textAlign: 'center', lineHeight: 0, paddingTop: 20 }}>
+                                {traveler.username}
+                            </p>
+                        ) : ''
+                }
+
+                <br />
+                <Link to={'/users/add/' + id}><button className='addActivityBtn'>+ Add Traveler</button></Link>
             </div>
 
             <div className='flex-container'>
                 <div className='activities'>
                     {
                         activities && activities.length > 0 ?
-                        activities.map((activity, index) => 
-                            <ActivityBtn
-                                key={activity.id}
-                                id={activity.id}
-                                activity={activity.activity}
-                                num_votes={activity.num_votes}
-                            />
-                        ) : ''
+                            activities.map((activity, index) =>
+                                <ActivityBtn
+                                    key={activity.id}
+                                    id={activity.id}
+                                    activity={activity.activity}
+                                    num_votes={activity.num_votes}
+                                />
+                            ) : ''
                     }
-                    <br/>
+                    <br />
                     <Link to={'../../activity/create/' + id}><button className='addActivityBtn'>+ Add Activity</button></Link>
                 </div>
 
                 <div className='destinations'>
                     {
                         destinations && destinations.length > 0 ?
-                        destinations.map((destination, index) => 
-                            <DestinationBtn
-                                key={destination.id}
-                                id={destination.id}
-                                destination={destination.destination}
-                            />
-                        ) : ''
+                            destinations.map((destination, index) =>
+                                <DestinationBtn
+                                    key={destination.id}
+                                    id={destination.id}
+                                    destination={destination.destination}
+                                />
+                            ) : ''
                     }
-                    <br/>
+                    <br />
                     <Link to={'../../destination/new/' + id}><button className='addDestinationBtn'>+ Add Destination</button></Link>
                 </div>
             </div>
-            
+
         </div>
-            
 
 
-    )
-}
 
-export default TripDetails
+    );
+};
+
+export default TripDetails;
