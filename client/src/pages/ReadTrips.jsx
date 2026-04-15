@@ -14,7 +14,7 @@ const ReadTrips = (props) => {
             {
                 trips && trips.length > 0 ?
                 trips.map((trip, index) => 
-                   <Card
+                    <Card
                         key={trip.id} 
                         id={trip.id} 
                         title={trip.title} 

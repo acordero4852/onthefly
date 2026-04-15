@@ -154,9 +154,27 @@ const createTripsUsersTable = async () => {
     }
 }
 
+const createUsersTripsTable = async () => {
+    const createUsersTripsTableQuery = `
+        CREATE TABLE IF NOT EXISTS users_trips (
+            id serial PRIMARY KEY,
+            trip_id int NOT NULL,
+            username text NOT NULL,
+            FOREIGN KEY (trip_id) REFERENCES trips(id)
+        );
+    `;
+    try {
+        await pool.query(createUsersTripsTableQuery);
+        console.log('🎉 users_trips table created successfully');
+    } catch (err) {
+        console.error('⚠️ error creating users_trips table', err);
+    }
+}
+
 seedTripsTable();
 createDestinationsTable();
 createActivitiesTable();
 createUsersTable();
 createTripsDestinationsTable();
 createTripsUsersTable();
+createUsersTripsTable();
