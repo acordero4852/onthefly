@@ -51,4 +51,6 @@ npm run dev
 
 ### Lab 8
 
+[Deployed Link](https://client-lnra.onren)
+
 ![Lab 8](gif/Lab-8.gif)
