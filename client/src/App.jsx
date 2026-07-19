@@ -13,7 +13,7 @@ import AddUserToTrip from './pages/AddUserToTrip';
 import Login from './pages/Login';
 import Avatar from './components/Avatar';
 
-const API_URL = "http://localhost:3001";
+const API_URL = "https://server-w2oy.onrender.com";
 
 const App = () => {
   const [trips, setTrips] = useState([]);
