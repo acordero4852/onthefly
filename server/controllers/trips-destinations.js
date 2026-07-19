@@ -20,7 +20,7 @@ const getTripsDestinations = async (request, response) => {
   try {
     const results = await pool.query('SELECT * FROM trips_destinations ORDER BY trip_id ASC');
     response.status(200).json(results.rows);
-    console.log(results.rows);
+    // console.log(results.rows);
   } catch (error) {
     response.status(409).json({ error: error.message });
     console.log('🚫 Unable to GET all trip destinations - Error:', error.message);
@@ -32,7 +32,7 @@ const getAllTrips = async (request, response) => {
     const destination_id = parseInt(request.params.destination_id);
     const results = await pool.query("SELECT t.* FROM trips_destinations td, trips t WHERE td.trip_id = t.id AND td.destination_id = $1", [destination_id]);
     response.status(200).json(results.rows);
-    console.log(results.rows);
+    //console.log(results.rows);
   } catch (error) {
     response.status(409).json({ error: error.message });
     console.log('🚫 Unable to GET trips with matching destination - Error:', error.message);
@@ -44,7 +44,7 @@ const getAllDestinations = async (request, response) => {
     const trip_id = parseInt(request.params.trip_id);
     const results = await pool.query("SELECT d.* FROM trips_destinations td, destinations d WHERE td.destination_id = d.id AND td.trip_id = $1", [trip_id]);
     response.status(200).json(results.rows);
-    console.log(results.rows);
+    // console.log(results.rows);
   } catch (error) {
     response.status(409).json({ error: error.message });
     console.log('🚫 Unable to GET destinations for given trip - Error:', error.message);

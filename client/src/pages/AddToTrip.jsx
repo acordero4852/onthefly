@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import AddTripOptionCard from '../components/AddTripOptionCard';
 
-
-const AddToTrip = (props) => {
+const AddToTrip = ({ data }) => {
   const [trips, setTrips] = useState([]);
 
   useEffect(() => {
-    setTrips(props.data);
-  }, [props]);
+    setTrips(data);
+  }, [data]);
 
   return (
     <div className="AddToTrip">

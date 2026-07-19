@@ -8,6 +8,19 @@ const currentPath = fileURLToPath(import.meta.url);
 const tripsFile = fs.readFileSync(path.join(dirname(currentPath), '../config/data/data.json'));
 const tripsData = JSON.parse(tripsFile);
 
+const tableExists = async (tableName) => {
+  const existsQuery = `
+    SELECT EXISTS (
+      SELECT FROM information_schema.tables
+      WHERE table_schema = 'public'
+      AND table_name = $1
+    );
+  `;
+
+  const res = await pool.query(existsQuery, [tableName]);
+  return res.rows[0].exists;
+};
+
 const createTripsTable = async () => {
   const createTripsTableQuery = `
     DROP TABLE IF EXISTS trips;
@@ -32,6 +45,11 @@ const createTripsTable = async () => {
 };
 
 const seedTripsTable = async () => {
+  if (await tableExists('trips')) {
+    console.log('ℹ️ trips table already exists - skipping seeding');
+    return;
+  }
+
   await createTripsTable();
 
   for (const trip of tripsData) {
@@ -155,6 +173,24 @@ const createTripsUsersTable = async () => {
   }
 };
 
+const createUsersTripsTable = async () => {
+  const createUsersTripsTableQuery = `
+    CREATE TABLE IF NOT EXISTS users_trips (
+      id serial PRIMARY KEY,
+      trip_id int NOT NULL,
+      username text NOT NULL,
+      FOREIGN KEY (trip_id) REFERENCES trips(id)
+    );
+  `;
+
+  try {
+    const res = await pool.query(createUsersTripsTableQuery);
+    console.log('🎉 users_trips table created successfully');
+  } catch (error) {
+    console.error('⚠️ error creating users_trips table', error);
+  }
+};
+
 const reset = async () => {
   await seedTripsTable();
   await createDestinationsTable();
@@ -162,7 +198,7 @@ const reset = async () => {
   await createActivitiesTable();
   await createTripsDestinationsTable();
   await createTripsUsersTable();
-
+  await createUsersTripsTable();
   await pool.end();
 };
 

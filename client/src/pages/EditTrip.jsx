@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router';
 import '../css/EditTrip.css';
 
-const EditTrip = ({ data }) => {
+const EditTrip = ({ data, api_url }) => {
   const { id } = useParams();
   const [trip, setTrip] = useState({ id: 0, title: "", description: "", img_url: "", num_days: 0, start_date: "", end_date: "", total_cost: 0.0 });
 
   useEffect(() => {
     const result = data.filter(item => item.id === parseInt(id))[0];
     setTrip({ id: parseInt(result.id), title: result.title, description: result.description, img_url: result.img_url, num_days: parseInt(result.num_days), start_date: result.start_date.slice(0, 10), end_date: result.end_date.slice(0, 10), total_cost: result.total_cost });
-  }, [data, id]);
+  }, [data, id, api_url]);
 
 
   const handleChange = (event) => {
@@ -34,7 +34,7 @@ const EditTrip = ({ data }) => {
       body: JSON.stringify(trip)
     };
 
-    fetch(`/api/trips/${id}`, options);
+    fetch(`${api_url}/api/trips/${id}`, options);
     window.location.href = '/';
   };
 

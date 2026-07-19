@@ -4,10 +4,11 @@ import ActivityBtn from '../components/ActivityBtn';
 import DestinationBtn from '../components/DestinationBtn';
 import '../css/TripDetails.css';
 
-const TripDetails = ({ data }) => {
+const TripDetails = ({ data, api_url, user }) => {
   const { id } = useParams();
   const [activities, setActivities] = useState([]);
   const [destinations, setDestinations] = useState([]);
+  const [travelers, setTravelers] = useState([]);
   const [trip, setTrip] = useState({
     id: 0,
     title: '',
@@ -16,7 +17,8 @@ const TripDetails = ({ data }) => {
     num_days: 0,
     start_date: '',
     end_date: '',
-    total_cost: 0.0
+    total_cost: 0.0,
+    username: user.username
   });
 
   useEffect(() => {
@@ -38,20 +40,28 @@ const TripDetails = ({ data }) => {
 
   useEffect(() => {
     const fetchActivities = async () => {
-      const response = await fetch('/api/activities/' + id);
+      const response = await fetch(`${api_url}/api/activities/${id}`);
       const data = await response.json();
       setActivities(data);
     };
 
     const fetchDestinations = async () => {
-      const response = await fetch('/api/trips-destinations/destinations/' + id);
+      const response = await fetch(`${api_url}/api/trips-destinations/destinations/${id}`);
       const data = await response.json();
       setDestinations(data);
     };
 
+    const fetchTravelers = async () => {
+      const response = await fetch(`${api_url}/api/users-trips/users/${id}`);
+      const travelersJson = await response.json();
+      setTravelers(travelersJson);
+    };
+
+    
     fetchActivities();
     fetchDestinations();
-  }, [data, id]);
+    fetchTravelers()
+  }, [data, id, api_url]);
 
   return (
     <div className='out'>
@@ -70,6 +80,19 @@ const TripDetails = ({ data }) => {
       </div>
 
       <div className='flex-container'>
+        <div className='travelers'>
+          {
+            travelers && travelers.length > 0 ?
+              travelers.map((traveler, index) =>
+                <p key={index} style={{ textAlign: 'center', lineHeight: 0, paddingTop: 20 }}>
+                  {traveler.username}
+                </p>
+              ) : ''
+          }
+          <br />
+          <Link to={'/users/add/' + id}><button className='addActivityBtn'>+ Add Traveler</button></Link>
+        </div>
+        
         <div className='activities'>
           {
             activities && activities.length > 0 ?
