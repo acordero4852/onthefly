@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "start": "node server.js",
-    "defv": "nodemon --require dotenv/config server.js",
+    "start": "npx http-server ./dist",
+    "dev": "nodemon --require dotenv/config server.js",
     "reset": "cd config && node --require dotenv/config reset.js"
   },
   "keywords": [],
