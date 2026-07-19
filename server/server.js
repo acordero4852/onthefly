@@ -11,6 +11,9 @@ import { GitHub } from './config/auth.js';
 import cors from 'cors';
 
 const app = express();
+const isProduction = process.env.NODE_ENV === 'production';
+
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cors({
@@ -21,7 +24,12 @@ app.use(cors({
 app.use(session({
   secret: 'codepath',
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax'
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
